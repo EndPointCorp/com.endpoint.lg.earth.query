@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.endpoint.lg.earth.querytxt;
+package com.endpoint.lg.earth.query;
 
 import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
 import interactivespaces.util.InteractiveSpacesUtilities;
@@ -29,33 +29,33 @@ import com.endpoint.lg.support.domain.Orientation;
 import com.endpoint.lg.support.message.DomainMessages;
 import com.endpoint.lg.support.message.MessageFields;
 import com.endpoint.lg.support.message.MessageWrapper;
-import com.endpoint.lg.support.message.querytxt.MessageTypesQueryTxt;
+import com.endpoint.lg.support.message.earthQuery.MessageTypesQuery;
 
 import java.io.File;
 import java.util.Map;
 
 /**
- * An Interactive Spaces activity which listens on a route for query.txt type
- * messages and writes the query.txt file for Google Earth.
+ * An Interactive Spaces activity which listens on a route for QueryFile type
+ * messages and writes the query file for Google Earth.
  *
  * @author Keith M. Hughes
  */
-public class QueryTxtActivity extends BaseRoutableRosActivity {
+public class QueryInterfaceActivity extends BaseRoutableRosActivity {
 
   /**
-   * Configuration parameter of where to write the querytxt file.
+   * Configuration parameter of where to write the query file.
    */
-  public static final String CONFIGURATION_NAME_QUERYTXT_LOCATION = "lg.earth.querytxt.location";
+  public static final String CONFIGURATION_NAME_QUERYFILE_LOCATION = "lg.earth.query.location";
 
   /**
    * The actual query text file to be written to.
    */
-  private File queryTxtFile;
+  private File queryFile;
 
   /**
    * The directory where query text files will be written.
    */
-  private File queryTxtFileDirectory;
+  private File queryFileDirectory;
 
   /**
    * The number of times to try writing the query file if one already exists.
@@ -76,9 +76,9 @@ public class QueryTxtActivity extends BaseRoutableRosActivity {
   @Override
   public void onActivitySetup() {
 
-    queryTxtFile = new File(getConfiguration().getRequiredPropertyString(CONFIGURATION_NAME_QUERYTXT_LOCATION));
-    queryTxtFileDirectory = queryTxtFile.getParentFile();
-    fileSupport.directoryExists(queryTxtFileDirectory);
+    queryFile = new File(getConfiguration().getRequiredPropertyString(CONFIGURATION_NAME_QUERYFILE_LOCATION));
+    queryFileDirectory = queryFile.getParentFile();
+    fileSupport.directoryExists(queryFileDirectory);
   }
 
   @Override
@@ -88,13 +88,13 @@ public class QueryTxtActivity extends BaseRoutableRosActivity {
 
     String operation = message.getString(MessageWrapper.MESSAGE_FIELD_TYPE);
     message.down(MessageWrapper.MESSAGE_FIELD_DATA);
-    if (MessageTypesQueryTxt.MESSAGE_TYPE_QUERYTXT_FLYTO.equals(operation)) {
+    if (MessageTypesQuery.MESSAGE_TYPE_QUERYFILE_FLYTO.equals(operation)) {
       handleFlyToOperation(message);
-    } else if (MessageTypesQueryTxt.MESSAGE_TYPE_QUERYTXT_SEARCH.equals(operation)) {
+    } else if (MessageTypesQuery.MESSAGE_TYPE_QUERYFILE_SEARCH.equals(operation)) {
       handleSearchOperation(message);
-    } else if (MessageTypesQueryTxt.MESSAGE_TYPE_QUERYTXT_TOUR.equals(operation)) {
+    } else if (MessageTypesQuery.MESSAGE_TYPE_QUERYFILE_TOUR.equals(operation)) {
       handleTourOperation(message);
-    } else if (MessageTypesQueryTxt.MESSAGE_TYPE_QUERYTXT_PLANET.equals(operation)) {
+    } else if (MessageTypesQuery.MESSAGE_TYPE_QUERYFILE_PLANET.equals(operation)) {
       handlePlanetOperation(message);
     } else {
       getLog().warn(String.format("Unknown Google Earth operation %s", operation));
@@ -108,15 +108,15 @@ public class QueryTxtActivity extends BaseRoutableRosActivity {
    *          the message data
    */
   private void handleFlyToOperation(JsonNavigator message) {
-    String type = message.getString(MessageTypesQueryTxt.MESSAGE_FIELD_QUERYTXT_FLYTO_TYPE);
+    String type = message.getString(MessageTypesQuery.MESSAGE_FIELD_QUERYFILE_FLYTO_TYPE);
 
     StringBuilder query = new StringBuilder("flytoview=");
 
     String typeElementClose;
-    if (MessageTypesQueryTxt.MESSAGE_FIELD_VALUE_FLYTO_TYPE_CAMERA.equals(type)) {
+    if (MessageTypesQuery.MESSAGE_FIELD_VALUE_FLYTO_TYPE_CAMERA.equals(type)) {
       query.append("<Camera>");
       typeElementClose = "</Camera>";
-    } else if (MessageTypesQueryTxt.MESSAGE_FIELD_VALUE_FLYTO_TYPE_LOOKAT.equals(type)) {
+    } else if (MessageTypesQuery.MESSAGE_FIELD_VALUE_FLYTO_TYPE_LOOKAT.equals(type)) {
       query.append("<LookAt>");
       typeElementClose = "</LookAt>";
     } else {
@@ -179,7 +179,7 @@ public class QueryTxtActivity extends BaseRoutableRosActivity {
   private void handleSearchOperation(JsonNavigator message) {
     StringBuilder query = new StringBuilder();
 
-    String q = message.getString(MessageTypesQueryTxt.MESSAGE_FIELD_QUERYTXT_SEARCH_QUERY);
+    String q = message.getString(MessageTypesQuery.MESSAGE_FIELD_QUERYFILE_SEARCH_QUERY);
     if (!Strings.isNullOrEmpty(q)) {
       query.append("search=").append(q);
       writeQuery(query);
@@ -190,7 +190,7 @@ public class QueryTxtActivity extends BaseRoutableRosActivity {
       if (latitude != null && longitude != null) {
         query.append("search=").append(latitude).append(",").append(longitude);
 
-        String label = message.getString(MessageTypesQueryTxt.MESSAGE_FIELD_QUERYTXT_SEARCH_LABEL);
+        String label = message.getString(MessageTypesQuery.MESSAGE_FIELD_QUERYFILE_SEARCH_LABEL);
         if (!Strings.isNullOrEmpty(label)) {
           query.append("(").append(label).append(")");
         }
@@ -212,9 +212,9 @@ public class QueryTxtActivity extends BaseRoutableRosActivity {
   private void handleTourOperation(JsonNavigator message) {
     StringBuilder query = new StringBuilder();
 
-    boolean play = message.getBoolean(MessageTypesQueryTxt.MESSAGE_FIELD_QUERYTXT_TOUR_PLAY);
+    boolean play = message.getBoolean(MessageTypesQuery.MESSAGE_FIELD_QUERYFILE_TOUR_PLAY);
     if (play) {
-      String tourName = message.getString(MessageTypesQueryTxt.MESSAGE_FIELD_QUERYTXT_TOUR_TOURNAME);
+      String tourName = message.getString(MessageTypesQuery.MESSAGE_FIELD_QUERYFILE_TOUR_TOURNAME);
       if (!Strings.isNullOrEmpty(tourName)) {
         query.append("playtour=").append(tourName);
         writeQuery(query);
@@ -234,7 +234,7 @@ public class QueryTxtActivity extends BaseRoutableRosActivity {
    *          the data for the message
    */
   private void handlePlanetOperation(JsonNavigator message) {
-    String destination = message.getString(MessageTypesQueryTxt.MESSAGE_FIELD_QUERYTXT_PLANET_DESTINATION);
+    String destination = message.getString(MessageTypesQuery.MESSAGE_FIELD_QUERYFILE_PLANET_DESTINATION);
     if (destination != null) {
       StringBuilder query = new StringBuilder().append("planet=").append(destination);
       writeQuery(query);
@@ -251,21 +251,21 @@ public class QueryTxtActivity extends BaseRoutableRosActivity {
    */
   private synchronized void writeQuery(StringBuilder query) {
     try {
-      File newFile = File.createTempFile("query", "txt", queryTxtFileDirectory);
+      File newFile = File.createTempFile("query", "txt", queryFileDirectory);
 
       fileSupport.writeFile(newFile, query.toString());
 
       int count = 0;
-      while (count < numberQueryWriteRetries && queryTxtFile.exists()) {
+      while (count < numberQueryWriteRetries && queryFile.exists()) {
         InteractiveSpacesUtilities.delay(queryWriteRetryDelay);
         count++;
       }
 
-      if (!queryTxtFile.exists()) {
-        newFile.renameTo(queryTxtFile);
+      if (!queryFile.exists()) {
+        newFile.renameTo(queryFile);
       } else {
         getLog().warn(
-            String.format("The file %s has existed for too long. Aborting write.", queryTxtFile.getAbsolutePath()));
+            String.format("The file %s has existed for too long. Aborting write.", queryFile.getAbsolutePath()));
       }
     } catch (Exception e) {
       getLog().error("Error while writing query.txt file", e);

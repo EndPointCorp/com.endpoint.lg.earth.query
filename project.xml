@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <project type="activity" builder="java">
-  <name>Liquid Galaxy Google Earth QueryTxt</name>
+  <name>Google Earth Query Interface</name>
   <description>
-    An activity which listens on a route for Liquid Galaxy messages
-    supported by the query.txt protocol.
+    An activity which listens on a route for messages
+    supported by Google Earth's "QueryFile" protocol.
   </description>
 
-  <identifyingName>com.endpoint.lg.earth.querytxt</identifyingName>
-  <version>1.0.0</version>
+  <identifyingName>com.endpoint.lg.earth.query</identifyingName>
+  <version>1.0.0.dev</version>
 
   <deployments>
     <deployment type="testdeploy" location="${deployment.test.deploy}" />
