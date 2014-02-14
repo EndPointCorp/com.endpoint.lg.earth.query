@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2013-2014 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -142,19 +142,21 @@ public class QueryInterfaceActivity extends BaseRoutableRosActivity {
       query.append("<tilt>").append(tilt).append("</tilt>");
     }
 
-    Double roll = orientation.getRoll();
-    if (roll != null) {
-      query.append("<roll>").append(roll).append("</roll>");
+    if ("camera".equals(type)) {
+      Double roll = orientation.getRoll();
+      if (roll != null) {
+        query.append("<roll>").append(roll).append("</roll>");
+      }
+    }
+
+    if ("lookat".equals(type)) {
+      Double range = orientation.getRange();
+      if (range != null) {
+        query.append("<range>").append(range).append("</range>");
+      }
     }
 
     message.up();
-
-    if ("lookat".equals(type)) {
-      Double range = message.getDouble("range");
-
-      query.append("<range>").append(range).append("</range>");
-
-    }
 
     String altitudeMode = message.getString("altitudeMode");
     if (!Strings.isNullOrEmpty(altitudeMode)) {
