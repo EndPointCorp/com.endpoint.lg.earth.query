@@ -13,4 +13,26 @@
     <deployment type="testdeploy" location="${deployment.test.deploy}" />
     <deployment type="testimport" location="${deployment.test.import}" />
   </deployments>
+
+  <activity type="interactivespaces_native">
+      <name>Google Earth Query Interface</name>
+      <class>com.endpoint.lg.earth.query.QueryInterfaceActivity</class>
+      <configuration>
+          <property name="space.activity.log.level">
+              <value>info</value>
+          </property>
+          <property name="space.activity.ros.node.name">
+              <value>liquidgalaxy/earth/query</value>
+          </property>
+          <property name="lg.earth.query.location">
+              <value>/var/tmp/ge_queryfile</value>
+          </property>
+          <property name="space.activity.routes.inputs">
+              <value>target_event_bus</value>
+          </property>
+          <property name="space.activity.route.input.target_event_bus">
+              <value>/liquidgalaxy/${space.activity.group}/earth/query</value>
+          </property>
+      </configuration>
+  </activity>
 </project>

@@ -19,7 +19,7 @@ package com.endpoint.lg.earth.query;
 
 import interactivespaces.activity.impl.ros.BaseRoutableRosActivity;
 import interactivespaces.util.InteractiveSpacesUtilities;
-import interactivespaces.util.data.json.JsonNavigator;
+import interactivespaces.util.data.json.StandardJsonNavigator;
 import interactivespaces.util.io.FileSupport;
 import interactivespaces.util.io.FileSupportImpl;
 
@@ -85,7 +85,7 @@ public class QueryInterfaceActivity extends BaseRoutableRosActivity {
   @Override
   public void onNewInputJson(String channelName, Map<String, Object> m) {
     getLog().info("Got message " + m);
-    JsonNavigator message = new JsonNavigator(m);
+    StandardJsonNavigator message = new StandardJsonNavigator(m);
 
     String operation = message.getString(MessageWrapper.MESSAGE_FIELD_TYPE);
     message.down(MessageWrapper.MESSAGE_FIELD_DATA);
@@ -108,7 +108,7 @@ public class QueryInterfaceActivity extends BaseRoutableRosActivity {
    * @param message
    *          the message data
    */
-  private void handleFlyToOperation(JsonNavigator message) {
+  private void handleFlyToOperation(StandardJsonNavigator message) {
     String type = message.getString(MessageTypesQuery.MESSAGE_FIELD_QUERYFILE_FLYTO_TYPE);
 
     StringBuilder query = new StringBuilder("flytoview=");
@@ -179,7 +179,7 @@ public class QueryInterfaceActivity extends BaseRoutableRosActivity {
    * @param message
    *          the message data
    */
-  private void handleSearchOperation(JsonNavigator message) {
+  private void handleSearchOperation(StandardJsonNavigator message) {
     StringBuilder query = new StringBuilder();
 
     String q = message.getString(MessageTypesQuery.MESSAGE_FIELD_QUERYFILE_SEARCH_QUERY);
@@ -212,7 +212,7 @@ public class QueryInterfaceActivity extends BaseRoutableRosActivity {
    * @param message
    *          the message data
    */
-  private void handleTourOperation(JsonNavigator message) {
+  private void handleTourOperation(StandardJsonNavigator message) {
     StringBuilder query = new StringBuilder();
 
     boolean play = message.getBoolean(MessageTypesQuery.MESSAGE_FIELD_QUERYFILE_TOUR_PLAY);
@@ -236,7 +236,7 @@ public class QueryInterfaceActivity extends BaseRoutableRosActivity {
    * @param message
    *          the data for the message
    */
-  private void handlePlanetOperation(JsonNavigator message) {
+  private void handlePlanetOperation(StandardJsonNavigator message) {
     String destination = message.getString(MessageTypesQuery.MESSAGE_FIELD_QUERYFILE_PLANET_DESTINATION);
     if (destination != null) {
       StringBuilder query = new StringBuilder().append("planet=").append(destination);
