@@ -7,7 +7,7 @@
   </description>
 
   <identifyingName>com.endpoint.lg.earth.query</identifyingName>
-  <version>1.0.0.dev</version>
+  <version>1.1.0</version>
 
   <deployments>
     <deployment type="testdeploy" location="${deployment.test.deploy}" />
