@@ -18,6 +18,9 @@
       <name>Google Earth Query Interface</name>
       <class>com.endpoint.lg.earth.query.QueryInterfaceActivity</class>
       <configuration>
+          <property name="space.activity.group">
+              <value>generic</value>
+          </property>
           <property name="space.activity.log.level">
               <value>info</value>
           </property>
